@@ -1,10 +1,15 @@
+import numpy as np
 import pandas as pd
 
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from typing import Tuple
 
 
-def tokenize_and_pad(X_train: pd.Series, X_test: pd.Series, max_len: int = 100, num_words: int = 10000) -> Tuple[np.ndarray, np.ndarray, Tokenizer]:
+def tokenize_and_pad(X_train: pd.Series,
+                     X_test: pd.Series,
+                     max_len: int = 100,
+                     num_words: int = 10000) -> Tuple[np.ndarray, np.ndarray, Tokenizer]:
     """
     Tokenize and pad text sequences.
 
