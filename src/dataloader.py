@@ -2,7 +2,8 @@ from typing import Literal
 import pandas as pd
 
 
-def load_data(filepath: str, sentiments: list[Literal["positive", "neutral", "negative"]] = None) -> pd.DataFrame:
+def load_data(filepath: str,
+              sentiments: list[Literal["positive", "neutral", "negative"]] = ["positive", "neutral", "negative"]) -> pd.DataFrame:
     """
     Load dataset and filter by sentiment.
 
