@@ -1,7 +1,10 @@
 import numpy as np
 import evaluate
-from typing import Tuple, Dict
+from typing import Tuple, Dict, List
+from datasets import DatasetDict
 from sklearn.metrics import classification_report
+from transformers import Trainer
+
 
 def compute_metrics(eval_pred: Tuple[np.ndarray, np.ndarray]) -> Dict[str, float]:
     """
@@ -20,14 +23,19 @@ def compute_metrics(eval_pred: Tuple[np.ndarray, np.ndarray]) -> Dict[str, float
     return {"accuracy": acc["accuracy"], "f1": f1["f1"]}
 
 
-def evaluate_model(trainer: Trainer, dataset: DatasetDict, original_labels: List[int]) -> None:
+def evaluate_model(trainer: Trainer, dataset: DatasetDict, original_labels: List[int]) -> Tuple:
     """
     Evaluates the model on the test set and prints a classification report.
     Args:
         trainer (Trainer): Hugging Face Trainer.
         dataset (DatasetDict): Tokenized dataset.
         original_labels (List[int]): Ground-truth labels for the test set.
+    Returns:
+        Tuple: Predictions object and predicted labels.
     """
     predictions = trainer.predict(dataset["test"])
     pred_labels = np.argmax(predictions.predictions, axis=1)
     print(classification_report(original_labels, pred_labels, target_names=['negative', 'neutral', 'positive']))
+
+    return predictions, pred_labels
+
