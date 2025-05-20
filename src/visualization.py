@@ -1,39 +1,33 @@
+import os
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
-from typing import Dict
+from typing import List
 
 
-import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
-from typing import Dict, List
-
-
-def plot_confusion_matrices(
-    y_test: List[str],
-    predictions: Dict[str, List[str]],
-    labels: List[str],
-    save_path: str = "confusion_matrix.png"
+def plot_confusion_matrix(
+        y_true: List[str],
+        y_pred: List[str],
+        labels: List[str],
+        model_name: str,
+        save_dir: str = "confusion_matrices"
 ) -> None:
     """
-    Plot and optionally save confusion matrices for each model.
+    Plot and save a single confusion matrix.
 
     Args:
-        y_test (list): True labels.
-        predictions (dict): Model predictions. Key is model name.
-        labels (list): Class labels in correct order.
-        save_path (str, optional): File path to save the figure (e.g., 'conf_matrices.png').
+        y_true (list): True labels.
+        y_pred (list): Predicted labels.
+        labels (list): All class labels.
+        model_name (str): Name of the model (used in the plot title and filename).
+        save_dir (str): Directory to save the plot.
     """
-    fig, ax = plt.subplots(1, len(predictions), figsize=(6 * len(predictions), 5))
-    if len(predictions) == 1:
-        ax = [ax]
+    os.makedirs(save_dir, exist_ok=True)
 
-    for i, (name, y_pred) in enumerate(predictions.items()):
-        cm = confusion_matrix(y_test, y_pred, labels=labels)
-        disp = ConfusionMatrixDisplay(cm, display_labels=labels)
-        disp.plot(ax=ax[i], cmap='Blues', values_format='d')
-        ax[i].set_title(f"Model: {name}")
-
+    cm = confusion_matrix(y_true, y_pred, labels=labels)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+    fig, ax = plt.subplots(figsize=(6, 5))
+    disp.plot(ax=ax, cmap="Blues", values_format='d')
+    ax.set_title(f"Confusion Matrix: {model_name}")
     plt.tight_layout()
-    if save_path:
-        plt.savefig(save_path, dpi=300)
-    plt.show()
+    plt.savefig(os.path.join(save_dir, f"confusion_matrix_{model_name}.png"), dpi=300)
+    plt.close()
