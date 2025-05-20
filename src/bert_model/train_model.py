@@ -46,5 +46,7 @@ def train_model(dataset: DatasetDict, model_name: str, label2id: Dict[str, int],
     )
 
     trainer.train()
-    return trainer
+    return trainer, tokenized_dataset
+
+
 
