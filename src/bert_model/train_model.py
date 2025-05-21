@@ -1,5 +1,5 @@
 from datasets import DatasetDict
-from typing import Dict
+from typing import Dict, Tuple, Union
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, TrainingArguments, Trainer
 
 from preprocess import tokenize_dataset
@@ -7,15 +7,13 @@ from compute_metrics import compute_metrics
 
 
 def train_model(
-    dataset: DatasetDict,
-    model_name: str,
-    label2id: Dict[str, int],
-    id2label: Dict[int, str],
-    num_train_epochs: int,
-    batch_size: int,
-    learning_rate: float,
-    max_len: int
-) -> Trainer:
+        dataset: DatasetDict,
+        model_name: str,
+        label2id: Dict[str, int],
+        id2label: Dict[int, str],
+        num_train_epochs: int,
+        batch_size: int,
+        learning_rate: float) -> tuple[Union[Trainer, Trainer], DatasetDict]:
     """
     Trains a BERT model on the dataset using provided hyperparameters.
 
@@ -27,7 +25,6 @@ def train_model(
         num_train_epochs (int): Number of training epochs.
         batch_size (int): Training batch size.
         learning_rate (float): Learning rate for optimizer.
-        max_len (int): Maximum sequence length.
 
     Returns:
         Trainer: Trained Hugging Face Trainer object.
@@ -40,7 +37,7 @@ def train_model(
         id2label=id2label
     )
 
-    tokenized_dataset = tokenize_dataset(dataset, tokenizer, max_len=max_len)
+    tokenized_dataset = tokenize_dataset(dataset, tokenizer)
 
     training_args = TrainingArguments(
         output_dir="./results",
@@ -67,4 +64,3 @@ def train_model(
 
     trainer.train()
     return trainer, tokenized_dataset
-
