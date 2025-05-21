@@ -10,7 +10,8 @@ from lstm_model import build_lstm_model
 
 
 def train_and_evaluate_lstm(X_train_pad: np.ndarray, X_test_pad: np.ndarray,
-                            y_train: pd.Series, y_test: pd.Series, tokenizer: Tokenizer) -> List:
+                            y_train: pd.Series, y_test: pd.Series, tokenizer: Tokenizer,
+                            lstm_params: dict) -> List[str]:
     """
     Train and evaluate an LSTM model.
 
@@ -20,12 +21,23 @@ def train_and_evaluate_lstm(X_train_pad: np.ndarray, X_test_pad: np.ndarray,
         y_train: Training labels.
         y_test: Testing labels.
         tokenizer: Fitted tokenizer.
+        lstm_params: Dictionary containing LSTM hyperparameters.
     """
     label_map = {'positive': 0, 'neutral': 1, 'negative': 2}
     y_train_cat = to_categorical(y_train.map(label_map))
     y_test_cat = to_categorical(y_test.map(label_map))
 
-    model = build_lstm_model(input_length=X_train_pad.shape[1], vocab_size=len(tokenizer.word_index) + 1)
+    model = build_lstm_model(
+        input_length=X_train_pad.shape[1],
+        vocab_size=len(tokenizer.word_index) + 1,
+        num_classes=len(label_map),
+        embedding_dim=lstm_params["embedding_dim"],
+        lstm_units=lstm_params["lstm_units"],
+        lstm_dropout=lstm_params["dropout"],
+        recurrent_dropout=lstm_params["recurrent_dropout"],
+        dense_units=lstm_params["dense_units"],
+        dense_dropout=lstm_params["dense_dropout"]
+    )
 
     model.fit(X_train_pad, y_train_cat, epochs=5, batch_size=64, validation_data=(X_test_pad, y_test_cat), verbose=2)
 
